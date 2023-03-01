@@ -240,23 +240,23 @@ extern "C" void _start(void)
     // We should now be able to call the Limine terminal to print out
     // a simple "Hello World" to screen.
     struct limine_terminal *terminal = terminal_request.response->terminals[0];
-    terminal_request.response->write(terminal, "> Starting Boot init...\n", 24);
+    terminal_request.response->write(terminal, "LIMINE_INFO: Starting Boot init...\n", 24);
 
     if (framebuffer_request.response == NULL || framebuffer_request.response->framebuffer_count < 1)
     {
-        terminal_request.response->write(terminal, "> Framebuffer is NULL!\n", 23);
+        terminal_request.response->write(terminal, "LIMINE_ERROR: Framebuffer is NULL!\n", 23);
         done();
     }
     else
-        terminal_request.response->write(terminal, "> Framebuffer loaded!\n", 22);
+        terminal_request.response->write(terminal, "LIMINE_ERROR: Framebuffer loaded!\n", 22);
 
     if (rsdp_request.response == NULL || rsdp_request.response->address == NULL)
     {
-        terminal_request.response->write(terminal, "> RSDP is NULL!\n", 23);
+        terminal_request.response->write(terminal, "LIMINE_ERROR: RSDP is NULL!\n", 23);
         done();
     }
     else
-        terminal_request.response->write(terminal, "> RSDP loaded!\n", 15);
+        terminal_request.response->write(terminal, "LIMINE_SUCCESS: RSDP loaded!\n", 15);
 
     Framebuffer fb;
     {
@@ -274,7 +274,7 @@ extern "C" void _start(void)
 
     if (memmap_request.response == NULL)
     {
-        e9_printf("> Memory map not passed");
+        e9_printf("LIMINE_ERROR: Memory map not passed");
         done();
     }
 
@@ -283,7 +283,7 @@ extern "C" void _start(void)
 
     if (kernel_address_request.response == NULL)
     {
-        e9_printf("Kernel address not passed");
+        e9_printf("LIMINE_ERROR: Kernel address not passed");
         done();
     }
     struct limine_kernel_address_response *ka_response = kernel_address_request.response;
@@ -318,14 +318,14 @@ extern "C" void _start(void)
     }
     if (freeMemStart == NULL)
     {
-        e9_printf("> No valid Memory space found for OS!");
+        e9_printf("LIMINE_ERROR: No valid Memory space found for OS!");
         done();
     }
     startRAMAddr = freeMemStart;
 
     if (module_request.response == NULL)
     {
-        e9_printf("> Modules not passed!");
+        e9_printf("LIMINE_ERROR: Modules not passed!");
         done();
     }
     else
@@ -346,43 +346,40 @@ extern "C" void _start(void)
         limine_file *file = getFile(fName);
         if (file == NULL)
         {
-            e9_printf("> Failed to get Font \"%s\"!", fName);
+            e9_printf("LIMINE_ERROR: Failed to get Font \"%s\"!", fName);
             done();
         }
 
         font.psf1_Header = (PSF1_HEADER *)file->address;
         if (font.psf1_Header->magic[0] != 0x36 || font.psf1_Header->magic[1] != 0x04)
         {
-            e9_printf("> FONT HEADER INVALID!");
+            e9_printf("LIMINE_ERROR: FONT HEADER INVALID!");
             done();
         }
 
         font.glyphBuffer = (void *)((uint64_t)file->address + sizeof(PSF1_HEADER));
     }
 
-    e9_printf("> Assets loaded!");
+    e9_printf("LIMINE_SUCCESS: Assets loaded!");
 
     {
         uint64_t mallocDiff = (uint64_t)startRAMAddr - (uint64_t)freeMemStart;
 
         e9_printf("");
-        e9_printf("DEBUG RAM STATS");
-        e9_printf("%x (NOW) - %x (START) = %d bytes malloced", (uint64_t)startRAMAddr, (uint64_t)freeMemStart, mallocDiff);
+        e9_printf("LIMINE_INFO: DEBUG RAM STATS");
+        e9_printf("LIMINE_INFO: %x (NOW) - %x (START) = %d bytes malloced", (uint64_t)startRAMAddr, (uint64_t)freeMemStart, mallocDiff);
         e9_printf("");
 
         // freeMemStart = startRAMAddr;
         freeMemSize -= mallocDiff;
     }
 
-    e9_printf("> Kernel Start: %x (Size: %d Bytes)", (uint64_t)kernelStart, kernelSize);
+    e9_printf("LIMINE_INFO: Kernel Start: %x (Size: %d Bytes)", (uint64_t)kernelStart, kernelSize);
     e9_printf("");
-    e9_printf("> OS has %d MB of RAM. (Starts at %x)", freeMemSize / 1000000, (uint64_t)freeMemStart);
+    e9_printf("LIMINE_INFO: OS has %d MB of RAM. (Starts at %x)", freeMemSize / 1000000, (uint64_t)freeMemStart);
 
     terminal_request.response->write(terminal, "> Completed Boot Init!\n", 23);
     /* call ringOSX kernel */
 
-    while (1)
-    {
-        asm("hlt");
-    }
+    done();
 }
