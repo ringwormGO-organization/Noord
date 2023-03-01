@@ -1,5 +1,5 @@
 # Noord
-Codename for ringOSX
+Codename for ringOS-X
 
 Named after neighborhood in Amsterdam, Netherlands
 

@@ -38,7 +38,7 @@ barebones.iso: limine kernel
 	mkdir -p iso_root/media
 	cp kernel/kernel.elf \
 		limine.cfg limine/limine.sys limine/limine-cd.bin limine/limine-cd-efi.bin \
-		kernel/kernel/src/external/* \
+		kernel/ringOS-X/external/* \
 		iso_root/
 	cp media/* iso_root/media/
 	xorriso -as mkisofs -b limine-cd.bin \
