@@ -84,6 +84,5 @@ void e9_printf(const char *format, ...) {
         format++;
     }
 
-    e9_putc('\n');
     va_end(argp);
 }

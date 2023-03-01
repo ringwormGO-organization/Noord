@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "../limine/limine.h"
+#include "ANSI.h"
 
 struct Framebuffer
 {
@@ -175,7 +176,9 @@ void *quickMalloc(uint64_t size)
 {
     if (startRAMAddr == NULL)
     {
-        e9_printf("> Cannot malloc from NULL!");
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: Cannot malloc from NULL!");
+        e9_printf(ANSI_COLOR_RESET);
         done();
     }
     void *temp = startRAMAddr;
@@ -240,23 +243,45 @@ extern "C" void _start(void)
     // We should now be able to call the Limine terminal to print out
     // a simple "Hello World" to screen.
     struct limine_terminal *terminal = terminal_request.response->terminals[0];
-    terminal_request.response->write(terminal, "LIMINE_INFO: Starting Boot init...\n", 24);
+
+    e9_printf(ANSI_COLOR_CYAN);
+    e9_printf("LIMINE_INFO: ");
+    e9_printf(ANSI_COLOR_RESET);
+    terminal_request.response->write(terminal, "Starting Boot init...\n\n", 24);
 
     if (framebuffer_request.response == NULL || framebuffer_request.response->framebuffer_count < 1)
     {
-        terminal_request.response->write(terminal, "LIMINE_ERROR: Framebuffer is NULL!\n", 23);
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: ");
+        e9_printf(ANSI_COLOR_RESET);
+        terminal_request.response->write(terminal, "Framebuffer is NULL!\n", 22);
+
         done();
     }
     else
-        terminal_request.response->write(terminal, "LIMINE_ERROR: Framebuffer loaded!\n", 22);
+    {
+        e9_printf(ANSI_COLOR_GREEN);
+        e9_printf("> LIMINE_SUCCESS: ");
+        e9_printf(ANSI_COLOR_RESET);
+        terminal_request.response->write(terminal, "Framebuffer loaded!\n", 21);
+    }
 
     if (rsdp_request.response == NULL || rsdp_request.response->address == NULL)
     {
-        terminal_request.response->write(terminal, "LIMINE_ERROR: RSDP is NULL!\n", 23);
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: ");
+        e9_printf(ANSI_COLOR_RESET);
+        terminal_request.response->write(terminal, "RSDP is NULL!\n", 15);
+
         done();
     }
     else
-        terminal_request.response->write(terminal, "LIMINE_SUCCESS: RSDP loaded!\n", 15);
+    {
+        e9_printf(ANSI_COLOR_GREEN);
+        e9_printf("> LIMINE_SUCCESS: ");
+        e9_printf(ANSI_COLOR_RESET);
+        terminal_request.response->write(terminal, "RSDP loaded!\n\n", 15);
+    }
 
     Framebuffer fb;
     {
@@ -274,7 +299,11 @@ extern "C" void _start(void)
 
     if (memmap_request.response == NULL)
     {
-        e9_printf("LIMINE_ERROR: Memory map not passed");
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: ");
+        e9_printf(ANSI_COLOR_RESET);
+        e9_printf("Memory map not passed\n");
+
         done();
     }
 
@@ -283,13 +312,29 @@ extern "C" void _start(void)
 
     if (kernel_address_request.response == NULL)
     {
-        e9_printf("LIMINE_ERROR: Kernel address not passed");
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: ");
+        e9_printf(ANSI_COLOR_RESET);
+        e9_printf("Kernel address not passed\n");
+
         done();
     }
     struct limine_kernel_address_response *ka_response = kernel_address_request.response;
-    e9_printf("Kernel address feature, revision %d", ka_response->revision);
-    e9_printf("Physical base: %x", ka_response->physical_base);
-    e9_printf("Virtual base: %x", ka_response->virtual_base);
+
+    e9_printf(ANSI_COLOR_CYAN);
+    e9_printf("LIMINE_INFO: ");
+    e9_printf(ANSI_COLOR_RESET);
+    e9_printf("Kernel address feature, revision %d\n", ka_response->revision);
+
+    e9_printf(ANSI_COLOR_CYAN);
+    e9_printf("LIMINE_INFO: ");
+    e9_printf(ANSI_COLOR_RESET);
+    e9_printf("Physical base: %x\n", ka_response->physical_base);
+
+    e9_printf(ANSI_COLOR_CYAN);
+    e9_printf("LIMINE_INFO: ");
+    e9_printf(ANSI_COLOR_RESET);
+    e9_printf("Virtual base: %x\n\n", ka_response->virtual_base);
 
     void *kernelStart = (void *)ka_response->physical_base;
     void *kernelStartV = (void *)ka_response->virtual_base;
@@ -318,14 +363,22 @@ extern "C" void _start(void)
     }
     if (freeMemStart == NULL)
     {
-        e9_printf("LIMINE_ERROR: No valid Memory space found for OS!");
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: ");
+        e9_printf(ANSI_COLOR_RESET);
+        e9_printf("No valid Memory space found for OS!\n");
+
         done();
     }
     startRAMAddr = freeMemStart;
 
     if (module_request.response == NULL)
     {
-        e9_printf("LIMINE_ERROR: Modules not passed!");
+        e9_printf(ANSI_COLOR_RED);
+        e9_printf("LIMINE_ERROR: ");
+        e9_printf(ANSI_COLOR_RESET);
+        e9_printf("Modules not passed!\n\n");
+
         done();
     }
     else
@@ -346,39 +399,64 @@ extern "C" void _start(void)
         limine_file *file = getFile(fName);
         if (file == NULL)
         {
-            e9_printf("LIMINE_ERROR: Failed to get Font \"%s\"!", fName);
+            e9_printf(ANSI_COLOR_RED);
+            e9_printf("LIMINE_ERROR: ");
+            e9_printf(ANSI_COLOR_RESET);
+            e9_printf("Failed to get Font \"%s\"!\n", fName);
+
             done();
         }
 
         font.psf1_Header = (PSF1_HEADER *)file->address;
         if (font.psf1_Header->magic[0] != 0x36 || font.psf1_Header->magic[1] != 0x04)
         {
-            e9_printf("LIMINE_ERROR: FONT HEADER INVALID!");
+            e9_printf(ANSI_COLOR_RED);
+            e9_printf("LIMINE_ERROR: ");
+            e9_printf(ANSI_COLOR_RESET);
+            e9_printf("FONT HEADER INVALID!\n");
+
             done();
         }
 
         font.glyphBuffer = (void *)((uint64_t)file->address + sizeof(PSF1_HEADER));
     }
 
-    e9_printf("LIMINE_SUCCESS: Assets loaded!");
+    e9_printf(ANSI_COLOR_GREEN);
+    e9_printf("> LIMINE_SUCCESS: ");
+    e9_printf(ANSI_COLOR_RESET);
+    e9_printf("Assets loaded!\n\n");
 
     {
         uint64_t mallocDiff = (uint64_t)startRAMAddr - (uint64_t)freeMemStart;
 
-        e9_printf("");
-        e9_printf("LIMINE_INFO: DEBUG RAM STATS");
-        e9_printf("LIMINE_INFO: %x (NOW) - %x (START) = %d bytes malloced", (uint64_t)startRAMAddr, (uint64_t)freeMemStart, mallocDiff);
-        e9_printf("");
+        e9_printf(ANSI_COLOR_CYAN);
+        e9_printf("LIMINE_INFO: ");
+        e9_printf(ANSI_COLOR_RESET);
+        e9_printf("DEBUG RAM STATS\n");
+
+        e9_printf(ANSI_COLOR_CYAN);
+        e9_printf("LIMINE_INFO: ");
+        e9_printf(ANSI_COLOR_RESET);
+        e9_printf("%x (NOW) - %x (START) = %d bytes malloced\n\n", (uint64_t)startRAMAddr, (uint64_t)freeMemStart, mallocDiff);
 
         // freeMemStart = startRAMAddr;
         freeMemSize -= mallocDiff;
     }
 
-    e9_printf("LIMINE_INFO: Kernel Start: %x (Size: %d Bytes)", (uint64_t)kernelStart, kernelSize);
-    e9_printf("");
-    e9_printf("LIMINE_INFO: OS has %d MB of RAM. (Starts at %x)", freeMemSize / 1000000, (uint64_t)freeMemStart);
+    e9_printf(ANSI_COLOR_CYAN);
+    e9_printf("LIMINE_INFO: ");
+    e9_printf(ANSI_COLOR_RESET);
+    e9_printf("Kernel Start: %x (Size: %d Bytes)\n", (uint64_t)kernelStart, kernelSize);
 
-    terminal_request.response->write(terminal, "> Completed Boot Init!\n", 23);
+    e9_printf(ANSI_COLOR_CYAN);
+    e9_printf("LIMINE_INFO: ");
+    e9_printf(ANSI_COLOR_RESET);
+    e9_printf("OS has %d MB of RAM. (Starts at %x)\n\n", freeMemSize / 1000000, (uint64_t)freeMemStart);
+
+    e9_printf(ANSI_COLOR_GREEN);
+    e9_printf("> LIMINE_SUCCESS: ");
+    e9_printf(ANSI_COLOR_RESET);
+    terminal_request.response->write(terminal, "Completed Boot Init!\n", 23);
     /* call ringOSX kernel */
 
     done();
