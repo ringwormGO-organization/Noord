@@ -72,7 +72,7 @@ void BasicRenderer::putStr(const char *chrs, int64_t xoff, int64_t yoff, uint32_
     color = tcol;
 }
 
-void BasicRenderer::Clear(bool resetCursor)
+void BasicRenderer::Clear(uint32_t color, bool resetCursor)
 {
     uint64_t fbBase = (uint64_t)framebuffer->BaseAddress;
     uint64_t pxlsPerScanline = framebuffer->PixelsPerScanLine;
@@ -82,7 +82,7 @@ void BasicRenderer::Clear(bool resetCursor)
     {
         for (int64_t x = 0; x < framebuffer->Width; x++)
         {
-            *((uint32_t*)(fbBase + 4 * (x + pxlsPerScanline * y))) = *((uint32_t*)(fbBase + 4 * (x + pxlsPerScanline * y)));
+            *((uint32_t*)(fbBase + 4 * (x + pxlsPerScanline * y))) = color;
         }
     }
 

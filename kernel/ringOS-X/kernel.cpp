@@ -10,7 +10,7 @@ int ringOSX(Framebuffer framebuffer, PSF1_FONT* psf1_font)
     r = BasicRenderer(&framebuffer, psf1_font);
     GlobalRenderer = &r;
 
-    GlobalRenderer->Clear(true);
+    GlobalRenderer->Clear(Colors.black, true);
     GlobalRenderer->putStr("ovo je test\n", 60, 70);
 
     return 0;
