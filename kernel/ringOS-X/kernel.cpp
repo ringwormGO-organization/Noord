@@ -1,8 +1,17 @@
 #include "kernel.h"
 #include "../e9print.h"
 
-int ringOSX(Framebuffer framebuffer)
+#include "BasicRenderer.hpp"
+
+BasicRenderer *GlobalRenderer;
+BasicRenderer r = BasicRenderer(NULL, NULL);
+int ringOSX(Framebuffer framebuffer, PSF1_FONT* psf1_font)
 {
-    e9_printf("%d | %d", framebuffer.Width, framebuffer.Height);
+    r = BasicRenderer(&framebuffer, psf1_font);
+    GlobalRenderer = &r;
+
+    GlobalRenderer->Clear(true);
+    GlobalRenderer->putStr("ovo je test\n", 60, 70);
+
     return 0;
 }

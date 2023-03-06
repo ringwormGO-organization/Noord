@@ -48,11 +48,4 @@ struct PSF1_FONT
     void *glyphBuffer;
 };
 
-struct BootInfo
-{
-    Framebuffer framebuffer;
-    PSF1_FONT psf1_Font;
-    RSDP2 rsdp;
-};
-
-int ringOSX(Framebuffer framebuffer);
+int ringOSX(Framebuffer framebuffer, PSF1_FONT* psf1_font);
