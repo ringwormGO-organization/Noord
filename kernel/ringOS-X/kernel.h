@@ -48,4 +48,14 @@ struct PSF1_FONT
     void *glyphBuffer;
 };
 
-int ringOSX(Framebuffer framebuffer, PSF1_FONT* psf1_font);
+static void memset(void *start, uint8_t value, uint64_t num)
+{
+    for (uint64_t i = 0; i < num; i++)
+    {
+        *(uint8_t *)((uint64_t)start + i) = value;
+    }
+
+    return;
+}
+
+int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, void *freeMemStart, void *extraMemStart, uint64_t freeMemSize, void *kernelStart, uint64_t kernelSize, void *kernelStartV);

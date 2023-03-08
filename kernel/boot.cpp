@@ -415,6 +415,6 @@ extern "C" void _start(void)
     e9_printf(ANSI_COLOR_RESET);
     terminal_request.response->write(terminal, "Completed Boot Init!\n", 23);
 
-    ringOSX(fb, &font);
+    ringOSX(fb, &font, startRAMAddr, freeMemStart, freeMemSize, kernelStart, kernelSize, kernelStartV);
     done();
 }

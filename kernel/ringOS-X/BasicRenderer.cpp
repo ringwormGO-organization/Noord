@@ -1,6 +1,6 @@
 #include "BasicRenderer.hpp"
 
-BasicRenderer::BasicRenderer(Framebuffer* framebuffer, PSF1_FONT* psf1_font)
+BasicRenderer::BasicRenderer(Framebuffer *framebuffer, PSF1_FONT *psf1_font)
 {
     color = 0xffffffff;
     CursorPosition = {0, 0};
@@ -49,7 +49,7 @@ void BasicRenderer::delChar(int64_t xoff, int64_t yoff, uint32_t col)
     for (int64_t y = yoff; y < yoff + 16; y++)
         for (int64_t x = xoff; x < xoff + 8; x++)
             if (x >= 0 && x < framebuffer->Width && y >= 0 && y < framebuffer->Height)
-                *(uint32_t*)(pixPtr + x + (y * framebuffer->PixelsPerScanLine)) = col;
+                *(uint32_t *)(pixPtr + x + (y * framebuffer->PixelsPerScanLine)) = col;
 }
 
 void BasicRenderer::delChar(int64_t xoff, int64_t yoff)
@@ -82,7 +82,7 @@ void BasicRenderer::Clear(uint32_t color, bool resetCursor)
     {
         for (int64_t x = 0; x < framebuffer->Width; x++)
         {
-            *((uint32_t*)(fbBase + 4 * (x + pxlsPerScanline * y))) = color;
+            *((uint32_t *)(fbBase + 4 * (x + pxlsPerScanline * y))) = color;
         }
     }
 

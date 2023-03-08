@@ -97,6 +97,10 @@ $(KERNEL): $(OBJ)
 # Include header dependencies.
 -include $(HEADER_DEPS)
 
+# Compilation rules for cstr.cpp
+%cstr.o: %cstr.cpp
+	$(CC) -ffreestanding -fno-omit-frame-pointer -msse -msse2 -msse3 -msse4 -c $< -o $@
+
 # Compilation rules for *.cpp files.
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -104,7 +108,6 @@ $(KERNEL): $(OBJ)
 # Compilation rules for *.c files.
 %.o: %.c limine.h
 	$(CC) $(PRECFLAGS) $(CFLAGS) -c $< -o $@
-	
 	
 # Compilation rules for *.S files.
 %.o: %.S limine.h
