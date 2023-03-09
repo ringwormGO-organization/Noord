@@ -11,6 +11,7 @@ bool Bitmap::operator[](uint64_t index)
     {
         return false;
     }
+    
     uint8_t temp = Buffer[index / 8];
     temp = (temp << (index % 8));
     temp = (temp >> 7);
@@ -23,6 +24,7 @@ bool Bitmap::Set(uint64_t index, bool value)
     {
         return false;
     }
+
     uint64_t index2 = index / 8;
 
     uint8_t bitIndexer = 0b10000000;
@@ -30,7 +32,9 @@ bool Bitmap::Set(uint64_t index, bool value)
     Buffer[index2] = Buffer[index2] & (~bitIndexer);
 
     if (value)
+    {
         Buffer[index2] = Buffer[index2] | bitIndexer;
+    }
 
     return true;
 }

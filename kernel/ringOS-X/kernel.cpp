@@ -7,29 +7,13 @@
 #include "paging/PageTableManager.h"
 #include "paging/paging.h"
 
+static BasicRenderer r = BasicRenderer(NULL, NULL);
 static PageFrameAllocator t = PageFrameAllocator();
 
-#define USER_END 0x0000007fffffffff
-#define TRANSLATED_PHYSICAL_MEMORY_BEGIN 0xffff800000000000llu
-#define MMIO_BEGIN 0xffffffff00000000llu
-#define KERNEL_TEMP_BEGIN 0xffffffff40000000llu
-#define KERNEL_DATA_BEGIN 0xffffffff80000000llu
-#define KERNEL_HEAP_BEGIN 0xffffffff80300000llu
-
-static inline uint64_t earlyVirtualToPhysicalAddr(const void *vAddr)
-{
-    if ((0xfffff00000000000llu & (uint64_t)vAddr) == TRANSLATED_PHYSICAL_MEMORY_BEGIN)
-        return ~TRANSLATED_PHYSICAL_MEMORY_BEGIN & (uint64_t)vAddr;
-    else
-        return ~KERNEL_DATA_BEGIN & (uint64_t)vAddr;
-}
-
-void PrepareMemory(Framebuffer framebuffer, void *freeMemStart, void *extraMemStart, uint64_t freeMemSize, void *kernelStart, uint64_t kernelSize, void *kernelStartV)
+void PrepareMemory(Framebuffer framebuffer, Memory memory)
 {
     GlobalAllocator = &t;
-    GlobalAllocator->ReadEFIMemoryMap(freeMemStart, freeMemSize);
-
-    uint64_t rFB = earlyVirtualToPhysicalAddr(framebuffer.BaseAddress);
+    GlobalAllocator->ReadEFIMemoryMap(memory.freeMemStart, memory.freeMemSize);
 
     PageTable *PML4 = (PageTable *)GlobalAllocator->RequestPage();
     memset(PML4, 0, 0x1000);
@@ -50,13 +34,12 @@ void PrepareMemory(Framebuffer framebuffer, void *freeMemStart, void *extraMemSt
     testing[0] = 123;
 }
 
-BasicRenderer r = BasicRenderer(NULL, NULL);
-int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, void *freeMemStart, void *extraMemStart, uint64_t freeMemSize, void *kernelStart, uint64_t kernelSize, void *kernelStartV)
+int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory)
 {
     r = BasicRenderer(&framebuffer, psf1_font);
     GlobalRenderer = &r;
 
-    PrepareMemory(framebuffer, freeMemStart, extraMemStart, freeMemSize, kernelStart, kernelSize, kernelStartV);
+    PrepareMemory(framebuffer, memory);
 
     GlobalRenderer->Clear(Colors.black, true);
     GlobalRenderer->putStr("ovo je test\n", 60, 70);

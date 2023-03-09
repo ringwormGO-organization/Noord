@@ -12,6 +12,32 @@ struct Framebuffer
     unsigned int PixelsPerScanLine;
 };
 
+#define PSF1_MAGIC0 0x36
+#define PSF1_MAGIC1 0x04
+
+struct PSF1_HEADER
+{
+    unsigned char magic[2];
+    unsigned char mode;
+    unsigned char charsize;
+};
+
+struct PSF1_FONT
+{
+    PSF1_HEADER *psf1_Header;
+    void *glyphBuffer;
+};
+
+struct Memory
+{
+    void *freeMemStart;
+    void *extraMemStart;
+    uint64_t freeMemSize;
+    void *kernelStart;
+    uint64_t kernelSize;
+    void *kernelStartV;
+};
+
 struct RSDP1
 {
     unsigned char Signature[8];
@@ -32,22 +58,6 @@ struct RSDP2
 
 } __attribute__((packed));
 
-#define PSF1_MAGIC0 0x36
-#define PSF1_MAGIC1 0x04
-
-struct PSF1_HEADER
-{
-    unsigned char magic[2];
-    unsigned char mode;
-    unsigned char charsize;
-};
-
-struct PSF1_FONT
-{
-    PSF1_HEADER *psf1_Header;
-    void *glyphBuffer;
-};
-
 static void memset(void *start, uint8_t value, uint64_t num)
 {
     for (uint64_t i = 0; i < num; i++)
@@ -58,4 +68,4 @@ static void memset(void *start, uint8_t value, uint64_t num)
     return;
 }
 
-int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, void *freeMemStart, void *extraMemStart, uint64_t freeMemSize, void *kernelStart, uint64_t kernelSize, void *kernelStartV);
+int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory);

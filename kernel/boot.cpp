@@ -400,6 +400,16 @@ extern "C" void _start(void)
         freeMemSize -= mallocDiff;
     }
 
+    Memory memory;
+    {
+        memory.freeMemStart = startRAMAddr;
+        memory.extraMemStart = freeMemStart;
+        memory.freeMemSize = freeMemSize;
+        memory.kernelStart = kernelStart;
+        memory.kernelSize = kernelSize;
+        memory.kernelStartV = kernelStartV;
+    }
+
     e9_printf(ANSI_COLOR_CYAN);
     e9_printf("LIMINE_INFO: ");
     e9_printf(ANSI_COLOR_RESET);
@@ -415,6 +425,6 @@ extern "C" void _start(void)
     e9_printf(ANSI_COLOR_RESET);
     terminal_request.response->write(terminal, "Completed Boot Init!\n", 23);
 
-    ringOSX(fb, &font, startRAMAddr, freeMemStart, freeMemSize, kernelStart, kernelSize, kernelStartV);
+    ringOSX(fb, &font, memory);
     done();
 }
