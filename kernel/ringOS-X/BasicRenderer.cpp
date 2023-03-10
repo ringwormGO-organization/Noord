@@ -31,16 +31,21 @@ void BasicRenderer::Print(const char *str)
     char *chr = (char *)str;
     while (*chr != 0)
     {
-        if (*chr == '\n')
+        switch (*chr)
         {
-            CursorPosition.X = 0;
-            CursorPosition.Y += 16;
-        }
+            case '\n':
+                CursorPosition.X = 0;
+                CursorPosition.Y += 16;
+                break;
 
-        else
-        {
-            PutChar(*chr, CursorPosition.X, CursorPosition.Y);
-            CursorPosition.X += 8;
+            case '\t':
+                CursorPosition.X += 8;
+                break;
+            
+            default:
+                PutChar(*chr, CursorPosition.X, CursorPosition.Y);
+                CursorPosition.X += 8;
+                break;
         }
 
         if (CursorPosition.X + 8 > framebuffer->Width)
