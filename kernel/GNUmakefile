@@ -80,7 +80,7 @@ override CFILES := $(shell find . -type f -name '*.c')
 override CPPFILES := $(shell find . -type f -name '*.cpp')
 override ASFILES := $(shell find . -type f -name '*.S')
 override NASMFILES := $(shell find . -type f -name '*.asm')
-override OBJ := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) $(ASFILES:.S=.o) $(NASMFILES:.asm=_asm.o)
+override OBJ := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) $(ASFILES:.S=.o) $(NASMFILES:.asm=.asm_o)
 override HEADER_DEPS := $(CFILES:.c=.d) $(CFILES:.cpp=.d) $(ASFILES:.S=.d)
 
 # Default target.
@@ -114,7 +114,7 @@ $(KERNEL): $(OBJ)
 	$(CC) $(PRECFLAGS) $(CFLAGS) -c $< -o $@
 
 # Compilation rules for *.asm (nasm) files.
-%.o: %.asm
+%.asm_o: %.asm
 	nasm $(NASMFLAGS) $< -o $@
 
 # Remove object files and the final executable.
