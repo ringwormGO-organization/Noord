@@ -5,8 +5,8 @@
 
 struct Point
 {
-    unsigned int x;
-    unsigned int y;
+    unsigned int X;
+    unsigned int Y;
 };
 
 static struct col
@@ -46,12 +46,8 @@ public:
     unsigned int color;
     bool overwrite = false;
 
-    void putChar(char chr, int64_t xoff, int64_t yoff, uint32_t fg, uint32_t bg);
-    void putChar(char chr, int64_t xoff, int64_t yoff);
-    void delChar(int64_t xoff, int64_t yoff, uint32_t col);
-    void delChar(int64_t xoff, int64_t yoff);
-    void putStr(const char *chrs, int64_t xoff, int64_t yoff);
-    void putStr(const char *chrs, int64_t xoff, int64_t yoff, uint32_t col);
+    void Print(const char* str);
+    void PutChar(char chr, unsigned int xOff, unsigned int yOff);
 
     void Clear(uint32_t color, bool resetCursor);
 };

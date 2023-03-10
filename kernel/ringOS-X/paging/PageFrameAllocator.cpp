@@ -152,7 +152,8 @@ void *PageFrameAllocator::RequestPage()
         return (void *)(pageBitmapIndex * 4096);
     }
 
-    GlobalRenderer->putStr("ERROR: NO MORE RAM AVAIABLE!", 120, 130);
+    GlobalRenderer->Clear(Colors.red, true);
+    GlobalRenderer->Print("ERROR: NO MORE RAM AVAIABLE!");
     asm("hlt");
 
     return NULL; // Page Frame Swap to file

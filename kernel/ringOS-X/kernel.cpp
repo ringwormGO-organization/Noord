@@ -42,13 +42,13 @@ int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory)
     PrepareMemory(framebuffer, memory);
 
     GlobalRenderer->Clear(Colors.black, true);
-    GlobalRenderer->putStr("ovo je test\n", 60, 70);
+    GlobalRenderer->Print("ovo je test\n");
 
     GlobalPageTableManager.MapMemory((void*)0x600000000, (void*)0x800000, false);
 
     uint64_t* test = (uint64_t*)0x600000000;
     *test = 26;
 
-    GlobalRenderer->putStr("I am in the new Page Map!\n", 230, 240);
+    GlobalRenderer->Print("I am in the new Page Map!\n");
     return 0;
 }
