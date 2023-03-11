@@ -73,7 +73,7 @@ int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory)
     uint64_t* test = (uint64_t*)0x600000000;
     *test = 26;
 
-    asm("int $0x0e");
+    // asm("int $0x0e");
 
     GlobalRenderer->Print("I am in the new Page Map!\n");
     return 0;
