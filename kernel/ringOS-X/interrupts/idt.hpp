@@ -18,7 +18,7 @@ struct IDTDescEntry
     
     void SetOffset(uint64_t offset);
     uint64_t GetOffset();
-};
+} __attribute__((packed));
 
 struct IDTR
 {
