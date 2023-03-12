@@ -1,8 +1,6 @@
 limine
 limine/*
 
-kernel/*.o
-kernel/*.d
-
-kernel/ringOS-X/*.o
-kernel/ringOS-X/*.d
+*.o
+*.asm_o
+*.d
