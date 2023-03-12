@@ -9,6 +9,7 @@
 #include "gdt/gdt.hpp"
 #include "interrupts/idt.hpp"
 #include "interrupts/interrupts.hpp"
+#include "io.hpp"
 
 static BasicRenderer r = BasicRenderer(NULL, NULL);
 static PageFrameAllocator t = PageFrameAllocator();
@@ -43,12 +44,36 @@ void PrepareInterrupts()
     idtr.Limit = 0x0FFF;
     idtr.Offset = (uint64_t)GlobalAllocator->RequestPage();
 
-    IDTDescEntry* int_PageFault = (IDTDescEntry*)(idtr.Offset + 0xE * sizeof(IDTDescEntry));
-    int_PageFault->SetOffset((uint64_t)PageFault);
+    IDTDescEntry *int_PageFault = (IDTDescEntry *)(idtr.Offset + 0xE * sizeof(IDTDescEntry));
+    int_PageFault->SetOffset((uint64_t)PageFault_Handler);
     int_PageFault->type_attr = IDT_TA_InterruptGate;
     int_PageFault->selector = 0x08;
 
-    asm ("lidt %0" : : "m" (idtr));
+    IDTDescEntry *int_DoubleFault = (IDTDescEntry *)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
+    int_DoubleFault->SetOffset((uint64_t)DoubleFault_Handler);
+    int_DoubleFault->type_attr = IDT_TA_InterruptGate;
+    int_DoubleFault->selector = 0x08;
+
+    IDTDescEntry *int_GPFault = (IDTDescEntry *)(idtr.Offset + 0xD * sizeof(IDTDescEntry));
+    int_GPFault->SetOffset((uint64_t)GPFault_Handler);
+    int_GPFault->type_attr = IDT_TA_InterruptGate;
+    int_GPFault->selector = 0x08;
+
+    IDTDescEntry *int_Keyboard = (IDTDescEntry *)(idtr.Offset + 0x21 * sizeof(IDTDescEntry));
+    int_Keyboard->SetOffset((uint64_t)KeyboardInt_Handler);
+    int_Keyboard->type_attr = IDT_TA_InterruptGate;
+    int_Keyboard->selector = 0x08;
+
+    asm("lidt %0"
+        :
+        : "m"(idtr));
+
+    RemapPIC();
+
+    outb(PIC1_DATA, 0b11111101);
+    outb(PIC2_DATA, 0b11111111);
+
+    asm("sti");
 }
 
 int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory)
@@ -67,13 +92,6 @@ int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory)
 
     GlobalRenderer->Clear(Colors.black, true);
     GlobalRenderer->Print("ovo je test\n");
-
-    GlobalPageTableManager.MapMemory((void*)0x600000000, (void*)0x800000, false);
-
-    uint64_t* test = (uint64_t*)0x600000000;
-    *test = 26;
-
-    // asm("int $0x0e");
 
     GlobalRenderer->Print("I am in the new Page Map!\n");
     return 0;

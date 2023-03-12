@@ -3,4 +3,5 @@ ringOS-X/kernel.o: ringOS-X/kernel.cpp ringOS-X/kernel.h \
  ringOS-X/paging/PageFrameAllocator.h ringOS-X/paging/bitmap.h \
  ringOS-X/paging/PageMapIndexer.h ringOS-X/paging/PageTableManager.h \
  ringOS-X/paging/paging.h ringOS-X/gdt/gdt.hpp \
- ringOS-X/interrupts/idt.hpp ringOS-X/interrupts/interrupts.hpp
+ ringOS-X/interrupts/idt.hpp ringOS-X/interrupts/interrupts.hpp \
+ ringOS-X/io.hpp
