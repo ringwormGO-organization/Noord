@@ -11,6 +11,9 @@
 #include "interrupts/interrupts.hpp"
 #include "io.hpp"
 
+#include "idt/idt.h"
+#include "idt/isr.h"
+
 static BasicRenderer r = BasicRenderer(NULL, NULL);
 static PageFrameAllocator t = PageFrameAllocator();
 
@@ -81,14 +84,16 @@ int ringOSX(Framebuffer framebuffer, PSF1_FONT *psf1_font, Memory memory)
     r = BasicRenderer(&framebuffer, psf1_font);
     GlobalRenderer = &r;
 
-    PrepareMemory(framebuffer, memory);
+    //PrepareMemory(framebuffer, memory);
 
-    GDTDescriptor gdtDescriptor;
-    gdtDescriptor.Size = sizeof(GDT) - 1;
-    gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
-    LoadGDT(&gdtDescriptor);
+    //GDTDescriptor gdtDescriptor;
+    //gdtDescriptor.Size = sizeof(GDT) - 1;
+    //gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
+    //LoadGDT(&gdtDescriptor);
 
-    PrepareInterrupts();
+    //PrepareInterrupts();
+
+    isr_install();
 
     GlobalRenderer->Clear(Colors.black, true);
     GlobalRenderer->Print("ovo je test\n");
