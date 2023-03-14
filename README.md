@@ -1,3 +1,5 @@
+# R.I.P Pelly : 28.2.2023 - 14.3.2023
+
 # Noord
 Codename for ringOS-X
 
