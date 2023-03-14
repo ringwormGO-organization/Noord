@@ -10,3 +10,4 @@ Named after neighborhood in Amsterdam, Netherlands
 ## Credits:
 - [Poncho](https://github.com/Absurdponcho/PonchoOS)
 - [MaslOS](https://github.com/marceldobehere/MaslOS)
+- [64bit-os-tutorial](https://github.com/gmarino2048/64bit-os-tutorial)
